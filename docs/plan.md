@@ -117,3 +117,82 @@ Algumas categorias de alimentos são compradas juntas, o que abre espaço para p
 | `Z_CostContact`, `Z_Revenue` | Valores constantes | Todas | Remover |
 
 **Impacto estimado:** os problemas com remoção prevista (Year_Birth, categorias inválidas, Income vazio e outlier) somam até 32 linhas, cerca de 1,4% da base de 2.240 clientes. A perda é pequena e não compromete a análise.
+
+## Problemas de qualidade e decisões de limpeza
+
+> Contagens feitas no Excel (Dia 1) e confirmadas por código no notebook `01_limpeza.ipynb` (Dia 2). Em caso de diferença, vale o código.
+
+| Coluna | Problema | Linhas afetadas | Decisão (Dia 2) |
+|---|---|---|---|
+| Todas exceto `ID` | Linhas duplicadas: mesmo cliente cadastrado com IDs diferentes (identificado no Dia 2) | 182 | Remover, mantendo a primeira ocorrência |
+| `Year_Birth` | Anos de nascimento antes de 1901 (1893, 1899, 1900) | 3 | Remover |
+| `Marital_Status` | Categorias inválidas: Absurd (2), YOLO (2) | 4 | Remover |
+| `Marital_Status` | Categoria Alone, equivalente a Single | 3 | Agrupar em Single |
+| `Income` | Células vazias | 24 | Remover (cerca de 1% da base) |
+| `Income` | Outlier extremo: 666.666 | 1 | Remover |
+| Canais (`NumWeb`, `NumCatalog`, `NumStore`) | Clientes sem nenhuma compra, mas com gasto nas colunas `Mnt` e, em 2 casos, 15 compras com desconto (identificado no Dia 2) | 6 | Remover: registros inconsistentes |
+| `Income` | Valor 7.500 repetido muitas vezes | 12 | Manter; investigar na EDA se é valor padrão do sistema |
+| `Income` | Rendas muito baixas (abaixo de 5.000) | 6 | 4 removidas junto com os clientes sem compras; manter as 2 restantes |
+| `Income` | Faixa de 150 mil a 162 mil | 7 | 2 removidas junto com os clientes sem compras; manter as 5 restantes e validar coerência com o gasto na EDA |
+| `Z_CostContact`, `Z_Revenue` | Valores constantes (3 e 11) | Todas | Remover as colunas |
+
+### Achados do diagnóstico
+
+- **Duplicados:** 182 linhas idênticas em todas as colunas, exceto `ID`, incluindo data de cadastro, gastos e respostas às campanhas. Não são clientes diferentes; mantê-las faria esses clientes pesarem em dobro nas taxas de aceite e nos segmentos.
+- **Clientes sem compras:** os 6 registros combinam gasto maior que zero com zero compras nos canais, o que é contraditório. Eles concentram também rendas extremas (4 abaixo de 5.000 e 2 acima de 150 mil), o que reforça que são registros de má qualidade.
+- **Education:** 5 categorias válidas (Graduation 1.127, PhD 486, Master 370, 2n Cycle 203, Basic 54). Sem tratamento necessário.
+
+### Impacto estimado
+
+As remoções previstas somam até **220 linhas, cerca de 9,8% da base** de 2.240 clientes. Uma mesma linha pode ter mais de um problema, então o número real será confirmado na limpeza.
+
+A maior parte vem dos duplicados (182), que não representam perda de informação, porque são cópias. Sem eles, as remoções por qualidade somam 38 linhas, cerca de 1,7% da base.
+
+### Impacto real da limpeza
+
+Resultado do notebook `01_limpeza.ipynb`:
+
+| Etapa | Linhas removidas |
+|---|---|
+| Duplicados (mesmos dados, IDs diferentes) | 182 |
+| Idade acima de 100 anos | 3 |
+| Renda vazia | 24 |
+| Renda acima de 200 mil (outlier) | 1 |
+| Estado civil inválido (Absurd, YOLO) | 4 |
+| Clientes sem nenhuma compra nos canais | 6 |
+| **Total** | **220 (9,8% da base)** |
+
+- **Base inicial:** 2.240 clientes · **Base final:** 2.020 clientes
+- Não houve sobreposição entre os problemas: cada linha removida tinha um único problema, e o resultado bateu exatamente com a estimativa feita no diagnóstico.
+- A maior parte da redução vem dos duplicados (182), que não representam perda de informação. As remoções por qualidade somam 38 linhas, 1,7% da base.
+- Colunas removidas: `Z_CostContact` e `Z_Revenue` (constantes).
+- Colunas criadas: `Idade` (ano de referência 2014), `Estado_Civil` (Mora junto / Mora sozinho) e `Escolaridade` (em português).
+
+## Segmentos definidos (Dia 2)
+
+Variáveis criadas no notebook `01_limpeza.ipynb`, sobre a base limpa de 2.020 clientes.
+
+**Faixa de renda (quartis, 505 clientes cada)**
+
+| Faixa | Renda anual |
+|---|---|
+| Q1 Baixa | 2.447 a 35.523 |
+| Q2 | 35.544 a 51.529 |
+| Q3 | 51.537 a 68.397 |
+| Q4 Alta | 68.462 a 162.397 |
+
+Na H1 e na H6, "renda alta" significa renda acima de 68.462 (Q4).
+
+**Faixa etária (ano de referência 2014)**
+
+| Faixa | Clientes | % da base |
+|---|---|---|
+| Até 35 | 430 | 21% |
+| 36-45 | 687 | 34% |
+| 46-55 | 435 | 22% |
+| 56-65 | 401 | 20% |
+| 66+ | 67 | 3% |
+
+Atenção: a faixa 66+ tem amostra pequena (67 clientes); as taxas desse grupo são instáveis. Se necessário, agrupar com 56-65 (faixa 56+, com 468 clientes).
+
+**Outras variáveis de segmentação:** `Tem_Filhos` (H7), `Estado_Civil` (H8), `Comprou_Online` (H3), `Faixa_Web` (H2), `Ja_Aceitou` (H5) e `Engajado` (KPI de engajamento).
