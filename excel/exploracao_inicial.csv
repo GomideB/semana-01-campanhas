@@ -1,0 +1,30 @@
+Coluna;Grupo;Descrição;Tipo;Observações
+ID;Identificação;Identificador único do cliente;Número (ID);"Não entra na análise; serve para checar duplicados"
+Year_Birth;Perfil;Ano de nascimento do cliente;Número;"Verificar anos muito antigos (outliers); idade calculada com o ano de referência da base"
+Education;Perfil;Escolaridade;Texto (categoria);Basic, Graduation, 2n Cycle (equivale a mestrado), Master, PhD
+Marital_Status;Perfil;Estado civil;Texto (categoria);"Verificar categorias inválidas; agrupar em com parceiro / sem parceiro (H8)"
+Income;Perfil;Renda anual do domicílio;Número (moeda);"Verificar vazios; moeda não informada na base"
+Kidhome;Perfil;Número de crianças em casa;Número (contagem);Somado a Teenhome para a H7
+Teenhome;Perfil;Número de adolescentes em casa;Número (contagem);Somado a Kidhome para a H7
+Dt_Customer;Relacionamento;Data de cadastro do cliente;Data;"Vem como texto no formato dia-mês-ano; converter na limpeza"
+Recency;Relacionamento;Dias desde a última compra;Número (dias);Quanto menor, mais recente o cliente
+Complain;Relacionamento;Reclamou nos últimos 2 anos;Binário (0/1);1 = reclamou
+MntWines;Gasto (2 anos);Valor gasto com vinhos;Número (moeda);Compõe o gasto total
+MntFruits;Gasto (2 anos);Valor gasto com frutas;Número (moeda);Compõe o gasto total
+MntMeatProducts;Gasto (2 anos);Valor gasto com carnes;Número (moeda);Compõe o gasto total
+MntFishProducts;Gasto (2 anos);Valor gasto com peixes;Número (moeda);Compõe o gasto total
+MntSweetProducts;Gasto (2 anos);Valor gasto com doces;Número (moeda);Compõe o gasto total
+MntGoldProds;Gasto (2 anos);Valor gasto com produtos premium (gold);Número (moeda);Compõe o gasto total
+NumDealsPurchases;Canal;Compras feitas com desconto;Número (contagem);Não entra no total de compras (já contada nos canais)
+NumWebPurchases;Canal;Compras pelo site;Número (contagem);Base da proporção web (H2, H3, H4)
+NumCatalogPurchases;Canal;Compras por catálogo;Número (contagem);Compõe o total de compras
+NumStorePurchases;Canal;Compras na loja física;Número (contagem);Compõe o total de compras
+NumWebVisitsMonth;Canal;Visitas ao site no último mês;Número (contagem);Indicador de engajamento digital (H4)
+AcceptedCmp1;Campanhas;Aceitou a oferta da campanha 1;Binário (0/1);1 = aceitou
+AcceptedCmp2;Campanhas;Aceitou a oferta da campanha 2;Binário (0/1);1 = aceitou
+AcceptedCmp3;Campanhas;Aceitou a oferta da campanha 3;Binário (0/1);"1 = aceitou; na base as colunas não estão em ordem"
+AcceptedCmp4;Campanhas;Aceitou a oferta da campanha 4;Binário (0/1);1 = aceitou
+AcceptedCmp5;Campanhas;Aceitou a oferta da campanha 5;Binário (0/1);1 = aceitou
+Response;Campanhas;Aceitou a oferta da última campanha (6ª);Binário (0/1);Variável principal do projeto
+Z_CostContact;Sem uso;Custo de contato (constante);Número;"Mesmo valor em todas as linhas; remover na limpeza"
+Z_Revenue;Sem uso;Receita (constante);Número;"Mesmo valor em todas as linhas; remover na limpeza"
