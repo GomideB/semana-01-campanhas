@@ -66,3 +66,12 @@ SELECT
 FROM 'data/processed/clientes_limpo.csv'
 GROUP BY Faixa_Etaria
 ORDER BY MIN(Idade);
+
+-- KPI 9: Cartões do dashboard (reconciliação)
+SELECT
+    COUNT(*)                                             AS total_clientes,
+    ROUND(AVG(Response) * 100, 2)                        AS taxa_resposta_pct,
+    ROUND(AVG(Gasto_Total), 1)                           AS gasto_medio,
+    ROUND(AVG(Ticket_Medio), 2)                          AS ticket_medio_por_cliente,
+    ROUND(SUM(Gasto_Total) * 1.0 / SUM(Compras_Total), 2) AS ticket_medio_agregado
+FROM 'data/processed/clientes_limpo.csv';
